@@ -42,14 +42,18 @@ class _InboxAnimationState extends State<InboxAnimation> {
 
   @override
   void initState() {
+    super.initState();
     render = false;
     rightPositionData = false;
     firstIconAnimationStartData = false;
     secondIconAnimationStartData = false;
     thirdIconAnimationStartData = false;
     iconsTopPositionData = 0.0;
-    super.initState();
-    // Card List
+    getCardList();
+  }
+
+  // Card List
+  void getCardList() {
     cardList().then(
       (futureResultList) {
         _list = futureResultList.map((card) {
@@ -79,6 +83,7 @@ class _InboxAnimationState extends State<InboxAnimation> {
         // İlk boşluğu ekle
         _list.add(
           CardTileWidget(
+            index: (_list.length + 1),
             blankCard: true,
             topPosition: 0,
           ),
@@ -86,6 +91,7 @@ class _InboxAnimationState extends State<InboxAnimation> {
         // Son boşluğu ekle
         _list.add(
           CardTileWidget(
+            index: (_list.length + 1),
             blankCard: true,
             topPosition:
                 (topPosition + _headingBarHeight + _buttonBarHeight - 2),
@@ -135,7 +141,40 @@ class _InboxAnimationState extends State<InboxAnimation> {
 
   void removeItemList(int index) {
     if (index != null) {
+      double removeItemTopPosition =
+          _list.where((item) => item.index == index).toList()[0].topPosition;
+      double newTopPosition;
       _list.removeWhere((item) => item.index == index);
+      _list = _list.map((card) {
+        if (card.topPosition < removeItemTopPosition) {
+          newTopPosition = card.topPosition;
+        } else {
+          newTopPosition = (card.topPosition - 108.0);
+        }
+
+        return CardTileWidget(
+          key: GlobalKey(),
+          name: card.name,
+          avatar: card.avatar,
+          message: card.message,
+          time: card.time,
+          index: card.index,
+          topPosition: newTopPosition,
+          iconsTopPosition: card.iconsTopPosition,
+          height: cardHeight,
+          blankCard: card.blankCard,
+          bringToTop: bringToTop,
+          rightPosition: rightPosition,
+          firstIconPosition: firstIconPosition,
+          secondIconPosition: secondIconPosition,
+          thirdIconPosition: thirdIconPosition,
+          removeIndex: removeItemList,
+        );
+      }).toList();
+      setState(() {
+        topPosition = (topPosition - 108.0);
+        print(topPosition);
+      });
     }
   }
 
@@ -246,9 +285,17 @@ class _InboxAnimationState extends State<InboxAnimation> {
           children: <Widget>[
             Container(
               child: Center(
-                child: Text(
-                  'Inbox',
-                  style: TextStyle(color: Colors.white),
+                child: InkWell(
+                  onTap: () {
+                    setState(() {});
+                    _list.forEach((f) => print(!f.blankCard
+                        ? f.name + '---' + f.topPosition.toString()
+                        : 'blank - ' + f.topPosition.toString()));
+                  },
+                  child: Text(
+                    'Inbox',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ),
               width: 80.0,
