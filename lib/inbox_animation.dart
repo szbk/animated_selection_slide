@@ -11,7 +11,8 @@ class InboxAnimation extends StatefulWidget {
   _InboxAnimationState createState() => _InboxAnimationState();
 }
 
-class _InboxAnimationState extends State<InboxAnimation> {
+class _InboxAnimationState extends State<InboxAnimation>
+    with SingleTickerProviderStateMixin {
   List<CardMessage> listCardMessage;
   double _headingBarHeight = 65.0;
   double _buttonBarHeight = 45.0;
@@ -29,6 +30,7 @@ class _InboxAnimationState extends State<InboxAnimation> {
   bool render;
   // Remove index
   int removeIndexData;
+  bool removeAnimation = false;
 
   Future<List<CardMessage>> cardList() async {
     String responseJson = await rootBundle.loadString('assets/data.json');
@@ -78,6 +80,7 @@ class _InboxAnimationState extends State<InboxAnimation> {
             secondIconPosition: secondIconPosition,
             thirdIconPosition: thirdIconPosition,
             removeIndex: removeItemList,
+            removeAnimation: false,
           );
         }).toList();
         // İlk boşluğu ekle
@@ -143,13 +146,15 @@ class _InboxAnimationState extends State<InboxAnimation> {
     if (index != null) {
       double removeItemTopPosition =
           _list.where((item) => item.index == index).toList()[0].topPosition;
-      double newTopPosition;
+      double newTopPosition = topPosition;
       _list.removeWhere((item) => item.index == index);
       _list = _list.map((card) {
         if (card.topPosition < removeItemTopPosition) {
           newTopPosition = card.topPosition;
+          removeAnimation = false;
         } else {
           newTopPosition = (card.topPosition - 108.0);
+          removeAnimation = true;
         }
 
         return CardTileWidget(
@@ -169,6 +174,7 @@ class _InboxAnimationState extends State<InboxAnimation> {
           secondIconPosition: secondIconPosition,
           thirdIconPosition: thirdIconPosition,
           removeIndex: removeItemList,
+          removeAnimation: removeAnimation,
         );
       }).toList();
       setState(() {

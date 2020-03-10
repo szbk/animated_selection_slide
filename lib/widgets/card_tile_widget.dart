@@ -8,7 +8,7 @@ class CardTileWidget extends StatefulWidget {
   final int index;
   final double topPosition, height;
   final CardMessage list;
-  final bool blankCard;
+  final bool blankCard, removeAnimation;
   final Function bringToTop,
       rightPosition,
       firstIconPosition,
@@ -36,7 +36,8 @@ class CardTileWidget extends StatefulWidget {
       this.firstIconPosition,
       this.secondIconPosition,
       this.thirdIconPosition,
-      this.iconsTopPosition});
+      this.iconsTopPosition,
+      this.removeAnimation});
 
   @override
   _CardTileWidgetState createState() => _CardTileWidgetState();
@@ -44,7 +45,11 @@ class CardTileWidget extends StatefulWidget {
 
 class _CardTileWidgetState extends State<CardTileWidget>
     with TickerProviderStateMixin {
-  AnimationController controller, controller2, controller3, opacityController;
+  AnimationController controller,
+      controller2,
+      controller3,
+      opacityController,
+      controller4;
   Animation<double> xAnimation,
       yAnimation,
       yTopAnimation,
@@ -53,7 +58,8 @@ class _CardTileWidgetState extends State<CardTileWidget>
       xNewAnimation,
       xMaxAnimation,
       xBackAnimation,
-      opacityAnimation;
+      opacityAnimation,
+      slideAnimation;
 
   double xPositionOne = 0;
   double xPositionTwo = 0;
@@ -87,6 +93,8 @@ class _CardTileWidgetState extends State<CardTileWidget>
         AnimationController(duration: Duration(milliseconds: 170), vsync: this);
     controller3 =
         AnimationController(duration: Duration(milliseconds: 170), vsync: this);
+    controller4 =
+        AnimationController(duration: Duration(milliseconds: 300), vsync: this);
 
     opacityAnimation =
         Tween<double>(begin: 1, end: 0).animate(opacityController)
@@ -201,16 +209,28 @@ class _CardTileWidgetState extends State<CardTileWidget>
             }
           });
 
+    double newPosition = xPositionOne >= 100
+        ? (animationZero
+            ? widget.topPosition
+            : backX
+                ? widget.topPosition
+                : (animationTop ? yAnimation.value : yBottomAnimation.value))
+        : backX
+            ? widget.topPosition
+            : (animationTop ? yAnimation.value : yBottomAnimation.value);
+
+    if (widget.removeAnimation) controller4.forward();
+
+    slideAnimation =
+        Tween<double>(begin: (newPosition + 108.0), end: newPosition)
+            .animate(controller4)
+              ..addListener(() {
+                setState(() {
+                  print(slideAnimation.value);
+                });
+              });
     return Positioned(
-      top: xPositionOne >= 100
-          ? (animationZero
-              ? widget.topPosition
-              : backX
-                  ? widget.topPosition
-                  : (animationTop ? yAnimation.value : yBottomAnimation.value))
-          : backX
-              ? widget.topPosition
-              : (animationTop ? yAnimation.value : yBottomAnimation.value),
+      top: widget.removeAnimation ? slideAnimation.value : newPosition,
       left:
           (onePositionEnd ? xAnimation.value : (big100 ? 100 : xPositionOne)) <=
                   100
