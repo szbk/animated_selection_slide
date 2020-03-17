@@ -9,5 +9,5 @@ Dribbble Links : https://dribbble.com/shots/4749691-Sliding-operation
 
 ## Flutter
 
-![flutter gif]|512x397](https://raw.githubusercontent.com/sbilketay/inbox_mail/master/assets/images/img_flutter.gif)
+![flutter gif](https://raw.githubusercontent.com/sbilketay/inbox_mail/master/assets/images/img_flutter.gif =300x650)
 
