@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:inbox_mail/model.dart';
-import 'package:flutter/services.dart';
-import 'package:inbox_mail/widgets/icon_animation_widget.dart';
-import 'widgets/card_tile_widget.dart';
-import 'dart:convert';
+import 'package:inbox_mail/core/widgets/icon_animation_widget.dart';
+
+import '../model/model.dart';
+import '../service/services.dart';
+import 'card_title/card_title.dart';
 
 class InboxAnimation extends StatefulWidget {
   InboxAnimation({Key key}) : super(key: key);
@@ -17,11 +17,14 @@ class _InboxAnimationState extends State<InboxAnimation>
   double _headingBarHeight = 65.0;
   double _buttonBarHeight = 45.0;
   double cardHeight = 108;
-  List<CardTileWidget> cards;
-  List<CardTileWidget> brintToTapCardList;
+  List<CardTitle> cards;
+  List<CardTitle> brintToTapCardList;
   double topPosition = 26;
   double iconsTopPositionData;
+
+  MessageService service = MessageService.instance;
   // Icon Animation Bool
+
   bool rightPositionData,
       firstIconAnimationStartData,
       secondIconAnimationStartData,
@@ -32,15 +35,7 @@ class _InboxAnimationState extends State<InboxAnimation>
   int removeIndexData;
   bool removeAnimation = false;
 
-  Future<List<CardMessage>> cardList() async {
-    String responseJson = await rootBundle.loadString('assets/data.json');
-    List cards = json.decode(responseJson);
-    List<CardMessage> listCard =
-        cards.map((card) => CardMessage.fromJson(card)).toList();
-    return listCard;
-  }
-
-  List<CardTileWidget> _list;
+  List<CardTitle> _list;
 
   @override
   void initState() {
@@ -56,53 +51,50 @@ class _InboxAnimationState extends State<InboxAnimation>
 
   // Card List
   void getCardList() {
-    cardList().then(
-      (futureResultList) {
-        _list = futureResultList.map((card) {
-          topPosition = futureResultList.indexOf(card) == 0
-              ? topPosition
-              : (topPosition + cardHeight);
+    Future.microtask(() async {
+      final list = await service.cardList();
+      _list = list.map((card) {
+        topPosition =
+            list.indexOf(card) == 0 ? topPosition : (topPosition + cardHeight);
 
-          return CardTileWidget(
-            key: GlobalKey(),
-            name: card.name,
-            avatar: card.avatar,
-            message: card.message,
-            time: card.time,
-            index: futureResultList.indexOf(card),
-            topPosition: topPosition,
-            iconsTopPosition: iconsTopPosition,
-            height: cardHeight,
-            blankCard: false,
-            bringToTop: bringToTop,
-            rightPosition: rightPosition,
-            firstIconPosition: firstIconPosition,
-            secondIconPosition: secondIconPosition,
-            thirdIconPosition: thirdIconPosition,
-            removeIndex: removeItemList,
-            removeAnimation: false,
-          );
-        }).toList();
-        // İlk boşluğu ekle
-        _list.add(
-          CardTileWidget(
-            index: (_list.length + 1),
-            blankCard: true,
-            topPosition: 0,
-          ),
+        return CardTitle(
+          key: GlobalKey(),
+          name: card.name,
+          avatar: card.avatar,
+          message: card.message,
+          time: card.time,
+          index: list.indexOf(card),
+          topPosition: topPosition,
+          iconsTopPosition: iconsTopPosition,
+          height: cardHeight,
+          blankCard: false,
+          bringToTop: bringToTop,
+          rightPosition: rightPosition,
+          firstIconPosition: firstIconPosition,
+          secondIconPosition: secondIconPosition,
+          thirdIconPosition: thirdIconPosition,
+          removeIndex: removeItemList,
+          removeAnimation: false,
         );
-        // Son boşluğu ekle
-        _list.add(
-          CardTileWidget(
-            index: (_list.length + 1),
-            blankCard: true,
-            topPosition:
-                (topPosition + _headingBarHeight + _buttonBarHeight - 2),
-          ),
-        );
-        setState(() {});
-      },
-    );
+      }).toList();
+      // İlk boşluğu ekle
+      _list.add(
+        CardTitle(
+          index: (_list.length + 1),
+          blankCard: true,
+          topPosition: 0,
+        ),
+      );
+      // Son boşluğu ekle
+      _list.add(
+        CardTitle(
+          index: (_list.length + 1),
+          blankCard: true,
+          topPosition: (topPosition + _headingBarHeight + _buttonBarHeight - 2),
+        ),
+      );
+      setState(() {});
+    });
   }
 
   void rightPosition(bool data) {
@@ -135,7 +127,7 @@ class _InboxAnimationState extends State<InboxAnimation>
     });
   }
 
-  void bringToTop(CardTileWidget widget) {
+  void bringToTop(CardTitle widget) {
     setState(() {
       _list.remove(widget);
       _list.add(widget);
@@ -157,7 +149,7 @@ class _InboxAnimationState extends State<InboxAnimation>
           removeAnimation = true;
         }
 
-        return CardTileWidget(
+        return CardTitle(
           key: GlobalKey(),
           name: card.name,
           avatar: card.avatar,
@@ -188,32 +180,36 @@ class _InboxAnimationState extends State<InboxAnimation>
   Widget build(BuildContext context) {
     double _totalHeight =
         (topPosition + _headingBarHeight + _buttonBarHeight + cardHeight + 25);
-    return SingleChildScrollView(
-      child: _list == null
-          ? Center(child: CircularProgressIndicator())
-          : Container(
-              height: _totalHeight,
-              color: Color(0xffF4F9FF),
-              child: Stack(
-                children: <Widget>[
-                  // Message Text
-                  buildHeadingBar(),
-                  // Inbox and Archive Button
-                  buildButtonBar(),
-                  //Person Card List
-                  buildCardList(context),
-                  // Animation Icons
-                  IconAnimation(
-                    leftPosition: -27.0,
-                    topPosition: iconsTopPositionData,
-                    rightAnimationStart: rightPositionData,
-                    firstIconAnimationStart: firstIconAnimationStartData,
-                    secondIconAnimationStart: secondIconAnimationStartData,
-                    thirdIconAnimationStart: thirdIconAnimationStartData,
+    return Scaffold(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: _list == null
+              ? Center(child: CircularProgressIndicator())
+              : Container(
+                  height: _totalHeight,
+                  color: Color(0xffF4F9FF),
+                  child: Stack(
+                    children: <Widget>[
+                      // Message Text
+                      buildHeadingBar(),
+                      // Inbox and Archive Button
+                      buildButtonBar(),
+                      //Person Card List
+                      buildCardList(context),
+                      // Animation Icons
+                      IconAnimation(
+                        leftPosition: -27.0,
+                        topPosition: iconsTopPositionData,
+                        rightAnimationStart: rightPositionData,
+                        firstIconAnimationStart: firstIconAnimationStartData,
+                        secondIconAnimationStart: secondIconAnimationStartData,
+                        thirdIconAnimationStart: thirdIconAnimationStartData,
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
+                ),
+        ),
+      ),
     );
   }
 
