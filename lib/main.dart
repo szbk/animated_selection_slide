@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:inbox_mail/view/inbox_animation.dart';
+import 'widgets/appbar_widget.dart';
+import 'inbox_animation.dart';
 
 void main() => runApp(MainApp());
 
@@ -9,7 +10,12 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'App',
-      home: InboxAnimation(),
+      home: Scaffold(
+        appBar: buildAppBar(),
+        body: SafeArea(
+          child: InboxAnimation(),
+        ),
+      ),
     );
   }
 }
