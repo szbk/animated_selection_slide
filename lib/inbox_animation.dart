@@ -6,7 +6,8 @@ import 'widgets/card_tile_widget.dart';
 import 'dart:convert';
 
 class SlidingListAction extends StatefulWidget {
-  SlidingListAction({Key key}) : super(key: key);
+  final Function updateMessageLength;
+  SlidingListAction({this.updateMessageLength});
   @override
   _SlidingListActionState createState() => _SlidingListActionState();
 }
@@ -100,6 +101,7 @@ class _SlidingListActionState extends State<SlidingListAction>
             topPosition: (topPosition + 108),
           ),
         );
+        widget.updateMessageLength((_list.length - 2));
         setState(() {});
       },
     );
@@ -201,6 +203,7 @@ class _SlidingListActionState extends State<SlidingListAction>
           removeAnimation: removeAnimation,
         );
       }).toList();
+      widget.updateMessageLength((_list.length - 2));
       setState(() {
         topPosition = (topPosition - 108.0);
       });

@@ -13,7 +13,22 @@ void main() => runApp(
       ),
     );
 
-class MainApp extends StatelessWidget {
+class MainApp extends StatefulWidget {
+  @override
+  _MainAppState createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+
+  // Bubble length state management
+  int messageLength;
+
+  void updateBubble(int val) {
+    setState(() {
+      messageLength = val;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -24,14 +39,16 @@ class MainApp extends StatelessWidget {
           // Inbox and Archive Button
           buildButtonBar(context),
           Expanded(
-            child: SlidingListAction(),
+            child: SlidingListAction(
+              updateMessageLength: updateBubble,
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget buildBadge() {
+  Widget buildBadge(int length) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.orange,
@@ -41,7 +58,7 @@ class MainApp extends StatelessWidget {
       height: 20,
       child: Center(
         child: Text(
-          '3',
+          length.toString(),
           style: TextStyle(color: Colors.white, fontSize: 11),
         ),
       ),
@@ -61,7 +78,7 @@ class MainApp extends StatelessWidget {
             'Messages',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30.0),
           ),
-          buildBadge()
+          buildBadge(messageLength)
         ],
       ),
     );
