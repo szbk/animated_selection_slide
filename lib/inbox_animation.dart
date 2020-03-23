@@ -5,17 +5,17 @@ import 'package:inbox_mail/widgets/icon_animation_widget.dart';
 import 'widgets/card_tile_widget.dart';
 import 'dart:convert';
 
-class InboxAnimation extends StatefulWidget {
-  InboxAnimation({Key key}) : super(key: key);
+class SlidingListAction extends StatefulWidget {
+  SlidingListAction({Key key}) : super(key: key);
   @override
-  _InboxAnimationState createState() => _InboxAnimationState();
+  _SlidingListActionState createState() => _SlidingListActionState();
 }
 
-class _InboxAnimationState extends State<InboxAnimation>
+class _SlidingListActionState extends State<SlidingListAction>
     with SingleTickerProviderStateMixin {
   List<CardMessage> listCardMessage;
-  double _headingBarHeight = 65.0;
-  double _buttonBarHeight = 45.0;
+  double _headingBarHeight = 4.0;
+  double _buttonBarHeight = 0.0;
   double cardHeight = 108;
   List<CardTileWidget> cards;
   List<CardTileWidget> brintToTapCardList;
@@ -83,6 +83,7 @@ class _InboxAnimationState extends State<InboxAnimation>
             removeAnimation: false,
           );
         }).toList();
+
         // İlk boşluğu ekle
         _list.add(
           CardTileWidget(
@@ -96,8 +97,7 @@ class _InboxAnimationState extends State<InboxAnimation>
           CardTileWidget(
             index: (_list.length + 1),
             blankCard: true,
-            topPosition:
-                (topPosition + _headingBarHeight + _buttonBarHeight - 2),
+            topPosition: (topPosition + 108),
           ),
         );
         setState(() {});
@@ -157,6 +157,30 @@ class _InboxAnimationState extends State<InboxAnimation>
           removeAnimation = true;
         }
 
+        if ((card.blankCard) && (newTopPosition != 0)) {
+          if (newTopPosition < (MediaQuery.of(context).size.height - 190)) {
+            return CardTileWidget(
+              key: GlobalKey(),
+              name: card.name,
+              avatar: card.avatar,
+              message: card.message,
+              time: card.time,
+              index: card.index,
+              topPosition: 0,
+              iconsTopPosition: card.iconsTopPosition,
+              height: cardHeight,
+              blankCard: card.blankCard,
+              bringToTop: bringToTop,
+              rightPosition: rightPosition,
+              firstIconPosition: firstIconPosition,
+              secondIconPosition: secondIconPosition,
+              thirdIconPosition: thirdIconPosition,
+              removeIndex: removeItemList,
+              removeAnimation: removeAnimation,
+            );
+          }
+        }
+
         return CardTileWidget(
           key: GlobalKey(),
           name: card.name,
@@ -179,7 +203,6 @@ class _InboxAnimationState extends State<InboxAnimation>
       }).toList();
       setState(() {
         topPosition = (topPosition - 108.0);
-        print(topPosition);
       });
     }
   }
@@ -189,23 +212,22 @@ class _InboxAnimationState extends State<InboxAnimation>
     double _totalHeight =
         (topPosition + _headingBarHeight + _buttonBarHeight + cardHeight + 25);
     return SingleChildScrollView(
+      physics: AlwaysScrollableScrollPhysics(),
       child: _list == null
           ? Center(child: CircularProgressIndicator())
           : Container(
-              height: _totalHeight,
+              height: _totalHeight < (MediaQuery.of(context).size.height - 190)
+                  ? (MediaQuery.of(context).size.height - 190)
+                  : _totalHeight,
               color: Color(0xffF4F9FF),
               child: Stack(
                 children: <Widget>[
-                  // Message Text
-                  buildHeadingBar(),
-                  // Inbox and Archive Button
-                  buildButtonBar(),
                   //Person Card List
                   buildCardList(context),
                   // Animation Icons
                   IconAnimation(
                     leftPosition: -27.0,
-                    topPosition: iconsTopPositionData,
+                    topPosition: (iconsTopPositionData - 108.0),
                     rightAnimationStart: rightPositionData,
                     firstIconAnimationStart: firstIconAnimationStartData,
                     secondIconAnimationStart: secondIconAnimationStartData,
@@ -223,97 +245,36 @@ class _InboxAnimationState extends State<InboxAnimation>
       width: MediaQuery.of(context).size.width,
       child: Padding(
         padding: EdgeInsets.only(
-            top: (_buttonBarHeight + _headingBarHeight - 4),
-            left: 0.0,
-            right: 0.0),
+          top: 0,
+          left: 0.0,
+          right: 0.0,
+        ),
         child: Column(
           children: <Widget>[
             Expanded(
               child: Container(
                 width: MediaQuery.of(context).size.width,
-                child: Stack(children: _list),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget buildBadge() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.orange,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      width: 20,
-      height: 20,
-      child: Center(
-        child: Text(
-          '3',
-          style: TextStyle(color: Colors.white, fontSize: 11),
-        ),
-      ),
-    );
-  }
-
-  Positioned buildHeadingBar() {
-    return Positioned(
-      top: 0.0,
-      child: Container(
-        height: _headingBarHeight,
-        width: MediaQuery.of(context).size.width,
-        padding: EdgeInsets.only(left: 15.0, bottom: 20.0),
-        color: Colors.white,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              'Messages',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30.0),
-            ),
-            buildBadge()
-          ],
-        ),
-      ),
-    );
-  }
-
-  Positioned buildButtonBar() {
-    return Positioned(
-      top: _headingBarHeight,
-      child: Container(
-        color: Colors.white,
-        height: _buttonBarHeight,
-        width: MediaQuery.of(context).size.width,
-        padding: EdgeInsets.only(left: 15.0, bottom: 0.0),
-        child: Row(
-          children: <Widget>[
-            Container(
-              child: Center(
-                child: InkWell(
-                  onTap: () {
-                    setState(() {});
-                    _list.forEach((f) => print(!f.blankCard
-                        ? f.name + '---' + f.topPosition.toString()
-                        : 'blank - ' + f.topPosition.toString()));
-                  },
-                  child: Text(
-                    'Inbox',
-                    style: TextStyle(color: Colors.white),
-                  ),
+                child: Stack(
+                  children: _list.length == 2
+                      ? [
+                          CardTileWidget(
+                            index: 0,
+                            blankCard: true,
+                            topPosition: 0,
+                          ),
+                          Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              'No Item',
+                              style: TextStyle(
+                                color: Colors.grey,
+                              ),
+                            ),
+                          )
+                        ]
+                      : _list,
                 ),
               ),
-              width: 80.0,
-              height: 32.0,
-              decoration: BoxDecoration(boxShadow: [
-                BoxShadow(color: Colors.blue.withOpacity(0.7), blurRadius: 4.0)
-              ], color: Colors.blue, borderRadius: BorderRadius.circular(20.0)),
-            ),
-            SizedBox(width: 12.0),
-            Text(
-              'Archive',
-              style: TextStyle(color: Colors.grey),
             ),
           ],
         ),

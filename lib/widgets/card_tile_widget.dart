@@ -225,9 +225,7 @@ class _CardTileWidgetState extends State<CardTileWidget>
         Tween<double>(begin: (newPosition + 108.0), end: newPosition)
             .animate(controller4)
               ..addListener(() {
-                setState(() {
-                  print(slideAnimation.value);
-                });
+                setState(() {});
               });
     return Positioned(
       top: widget.removeAnimation ? slideAnimation.value : newPosition,
