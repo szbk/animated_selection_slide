@@ -36,6 +36,19 @@ class _MainAppState extends State<MainApp> {
       selectId = val["list_id"];
       selectAction = val["select_action"];
     });
+    String _action;
+    if (selectAction == 1) {
+      _action = 'favorites';
+    }else if(selectAction == 2){
+       _action = 'delete';
+    }else if (selectAction == 3){
+      _action = 'archive';
+    }
+    Scaffold.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Selected action \"$_action\" for $selectId id number!'),
+      ),
+    );
   }
 
   @override
