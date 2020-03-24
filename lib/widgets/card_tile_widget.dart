@@ -4,7 +4,7 @@ import 'package:inbox_mail/model.dart';
 
 class CardTileWidget extends StatefulWidget {
   final bool press;
-  final String avatar, name, message, time;
+  final String avatar, name, message, time, id;
   final int index;
   final double topPosition, height;
   final CardMessage list;
@@ -15,11 +15,13 @@ class CardTileWidget extends StatefulWidget {
       secondIconPosition,
       thirdIconPosition,
       iconsTopPosition,
-      removeIndex;
+      removeIndex,
+      selectedState;
   final Key key;
 
   CardTileWidget(
       {this.key,
+      this.id,
       this.avatar,
       this.name,
       this.message,
@@ -37,7 +39,8 @@ class CardTileWidget extends StatefulWidget {
       this.secondIconPosition,
       this.thirdIconPosition,
       this.iconsTopPosition,
-      this.removeAnimation});
+      this.removeAnimation,
+      this.selectedState});
 
   @override
   _CardTileWidgetState createState() => _CardTileWidgetState();
@@ -76,6 +79,7 @@ class _CardTileWidgetState extends State<CardTileWidget>
   bool big100 = false;
   bool backX = false;
   bool pos, opacityVisible, remove;
+  int selectedState = 0;
 
   @override
   void initState() {
@@ -275,6 +279,7 @@ class _CardTileWidgetState extends State<CardTileWidget>
                 position.delta.dx > 1.3) {
               controller3.forward();
               setState(() {
+                selectedState = 2;
                 remove = true;
                 backX = true;
               });
@@ -290,6 +295,7 @@ class _CardTileWidgetState extends State<CardTileWidget>
                 backX = true;
                 animationTop = false;
                 remove = false;
+                selectedState = 0;
                 animationZero = false;
               });
             }
@@ -300,6 +306,8 @@ class _CardTileWidgetState extends State<CardTileWidget>
                 position.delta.dy > -2.3) {
               controller2.forward();
               setState(() {
+                selectedState = 3;
+                remove = true;
                 animationTop = true;
                 animationZero = false;
                 backX = false;
@@ -311,6 +319,8 @@ class _CardTileWidgetState extends State<CardTileWidget>
                 !backX) {
               controller2.reverse();
               setState(() {
+                selectedState = 0;
+                remove = false;
                 animationZero = false;
                 backX = false;
               });
@@ -320,12 +330,18 @@ class _CardTileWidgetState extends State<CardTileWidget>
                 (position.delta.dy > 1.2 && position.delta.dy < 2.2)) {
               controller2.forward();
               setState(() {
+                remove = true;
+                selectedState = 1;
                 animationTop = false;
                 yAnimationAxis = 1;
                 animationZero = false;
                 backX = false;
               });
             }
+            widget.selectedState({
+              "list_id": widget.id,
+              "select_action": selectedState,
+            });
           },
           onPanEnd: (details) {
             controller.forward();

@@ -19,9 +19,10 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-
   // Bubble length state management
   int messageLength;
+  String selectId;
+  int selectAction;
 
   void updateBubble(int val) {
     setState(() {
@@ -29,8 +30,17 @@ class _MainAppState extends State<MainApp> {
     });
   }
 
+  // returns list id and action index
+  void selecetedState(Map val) {
+    setState(() {
+      selectId = val["list_id"];
+      selectAction = val["select_action"];
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    // print(selectId.toLowerCase() + ' --- ' + selectAction.toString());
     return SafeArea(
       child: Column(
         children: <Widget>[
@@ -40,6 +50,7 @@ class _MainAppState extends State<MainApp> {
           buildButtonBar(context),
           Expanded(
             child: SlidingListAction(
+              selectedState: selecetedState,
               updateMessageLength: updateBubble,
             ),
           ),

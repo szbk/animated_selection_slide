@@ -6,8 +6,8 @@ import 'widgets/card_tile_widget.dart';
 import 'dart:convert';
 
 class SlidingListAction extends StatefulWidget {
-  final Function updateMessageLength;
-  SlidingListAction({this.updateMessageLength});
+  final Function updateMessageLength, selectedState;
+  SlidingListAction({this.updateMessageLength, this.selectedState});
   @override
   _SlidingListActionState createState() => _SlidingListActionState();
 }
@@ -32,6 +32,7 @@ class _SlidingListActionState extends State<SlidingListAction>
   // Remove index
   int removeIndexData;
   bool removeAnimation = false;
+  Map selectState = {};
 
   Future<List<CardMessage>> cardList() async {
     String responseJson = await rootBundle.loadString('assets/data.json');
@@ -66,6 +67,7 @@ class _SlidingListActionState extends State<SlidingListAction>
 
           return CardTileWidget(
             key: GlobalKey(),
+            id: card.id,
             name: card.name,
             avatar: card.avatar,
             message: card.message,
@@ -82,6 +84,7 @@ class _SlidingListActionState extends State<SlidingListAction>
             thirdIconPosition: thirdIconPosition,
             removeIndex: removeItemList,
             removeAnimation: false,
+            selectedState: selectedState,
           );
         }).toList();
 
@@ -144,6 +147,12 @@ class _SlidingListActionState extends State<SlidingListAction>
     });
   }
 
+  void selectedState(Map val) {
+    setState(() {
+      selectState = val;
+    });
+  }
+
   void removeItemList(int index) {
     if (index != null) {
       double removeItemTopPosition =
@@ -163,6 +172,7 @@ class _SlidingListActionState extends State<SlidingListAction>
           if (newTopPosition < (MediaQuery.of(context).size.height - 190)) {
             return CardTileWidget(
               key: GlobalKey(),
+              id: card.id,
               name: card.name,
               avatar: card.avatar,
               message: card.message,
@@ -179,12 +189,14 @@ class _SlidingListActionState extends State<SlidingListAction>
               thirdIconPosition: thirdIconPosition,
               removeIndex: removeItemList,
               removeAnimation: removeAnimation,
+              selectedState: selectedState,
             );
           }
         }
 
         return CardTileWidget(
           key: GlobalKey(),
+          id: card.id,
           name: card.name,
           avatar: card.avatar,
           message: card.message,
@@ -201,9 +213,11 @@ class _SlidingListActionState extends State<SlidingListAction>
           thirdIconPosition: thirdIconPosition,
           removeIndex: removeItemList,
           removeAnimation: removeAnimation,
+          selectedState: selectedState,
         );
       }).toList();
       widget.updateMessageLength((_list.length - 2));
+      widget.selectedState(selectState);
       setState(() {
         topPosition = (topPosition - 108.0);
       });
