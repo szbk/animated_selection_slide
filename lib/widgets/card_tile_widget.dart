@@ -227,6 +227,7 @@ class _CardTileWidgetState extends State<CardTileWidget>
               ..addListener(() {
                 setState(() {});
               });
+
     return Positioned(
       top: widget.removeAnimation ? slideAnimation.value : newPosition,
       left:
@@ -251,7 +252,13 @@ class _CardTileWidgetState extends State<CardTileWidget>
               oneAnimationContinue = true;
               oneAnimationStart = true;
               onePositionEnd = false;
-              xPositionOne += position.delta.dx;
+
+              if (position.delta.dx < 0) {
+                xPositionOne = 0.0;
+              } else {
+                xPositionOne += position.delta.dx;
+              }
+
               if (xPositionOne >= 100) {
                 big100 = true;
               }
