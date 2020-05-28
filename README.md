@@ -1,6 +1,7 @@
 # inbox_mail
 
-This flutter project is a ui work on dribbble. It's not perfect. But it will be better.
+This flutter project allows you to make your choices with animation in inbox.
+For UI, it's inspired by the great example on dribbble! It's not perfect. But it will be better.
 
 Dribbble Links : https://dribbble.com/shots/4749691-Sliding-operation
 
