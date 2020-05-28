@@ -6,10 +6,10 @@ For UI, it's inspired by the great example on dribbble! It's not perfect. But it
 
 Dribbble Links : https://dribbble.com/shots/4749691-Sliding-operation
 
-![dribbble gif](https://cdn.dribbble.com/users/1969947/screenshots/4749691/800-600_1.gif)
+![dribbble gif] <img src="https://cdn.dribbble.com/users/1969947/screenshots/4749691/800-600_1.gif" width="450"/>
 
 
 ## Flutter
 
-![flutter gif](https://raw.githubusercontent.com/sbilketay/inbox_mail/master/assets/images/img_flutter.gif)
+![flutter gif] <img src="https://raw.githubusercontent.com/sbilketay/inbox_mail/master/assets/images/img_flutter.gif" width="350"/>
 
