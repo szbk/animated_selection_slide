@@ -1,4 +1,5 @@
-# inbox_mail
+# animated_selection_slide
+
 
 This flutter project allows you to make your choices with animation in inbox.
 For UI, it's inspired by the great example on dribbble! It's not perfect. But it will be better.
