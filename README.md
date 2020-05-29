@@ -1,4 +1,4 @@
-# animated_selection_slide
+# Animated Selection Slide
 
 [![Awesome Flutter](https://img.shields.io/badge/Awesome-Flutter-blue.svg)](https://github.com/Solido/awesome-flutter)
 
