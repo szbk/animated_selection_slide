@@ -1,5 +1,9 @@
 # animated_selection_slide
 
+<a href="https://github.com/Solido/awesome-flutter">
+   <img alt="Awesome Flutter" src="https://img.shields.io/badge/Awesome-Flutter-blue.svg?longCache=true&style=flat-square" />
+
+</a>
 
 This flutter project allows you to make your choices with animation in inbox.
 For UI, it's inspired by the great example on dribbble! It's not perfect. But it will be better.
